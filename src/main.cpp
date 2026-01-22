@@ -4,7 +4,8 @@
 #include <iostream>
 
 void print_file_info(const File &file) {
-  std::cout << file.get_name() << " " << file.get_size() << "\n";
+  std::cout << file.get_permissions() << " " << file.get_name() << " "
+            << file.get_size() << "\n";
 }
 
 int main(int argc, char *argv[]) {

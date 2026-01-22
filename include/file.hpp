@@ -9,6 +9,7 @@ public:
   File(const std::string &name, const std::string &path);
   const std::string &get_name() const;
   off_t get_size() const;
+  std::string get_permissions() const;
 
 private:
   std::string name_;
@@ -16,4 +17,8 @@ private:
   struct stat stat_;
 
   void retrieve_attributes();
+
+  std::string get_owner_permissions() const;
+  std::string get_group_permissions() const;
+  std::string get_other_permissions() const;
 };
