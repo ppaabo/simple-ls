@@ -16,6 +16,24 @@ std::string File::get_permissions() const {
   return get_owner_permissions() + get_group_permissions() +
          get_other_permissions();
 }
+char File::get_type() const {
+  if (S_ISREG(stat_.st_mode))
+    return '-';
+  if (S_ISDIR(stat_.st_mode))
+    return 'd';
+  if (S_ISLNK(stat_.st_mode))
+    return 'l';
+  if (S_ISBLK(stat_.st_mode))
+    return 'b';
+  if (S_ISCHR(stat_.st_mode))
+    return 'c';
+  if (S_ISFIFO(stat_.st_mode))
+    return 'p';
+  if (S_ISSOCK(stat_.st_mode))
+    return 's';
+
+  return '?';
+}
 
 void File::retrieve_attributes() {
   struct stat buf;

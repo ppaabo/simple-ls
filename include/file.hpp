@@ -10,6 +10,7 @@ public:
   const std::string &get_name() const;
   off_t get_size() const;
   std::string get_permissions() const;
+  char get_type() const;
 
 private:
   std::string name_;
