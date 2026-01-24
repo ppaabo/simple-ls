@@ -5,7 +5,8 @@
 
 void print_file_info(const File &file) {
   std::cout << file.get_type() << file.get_permissions() << " "
-            << file.get_name() << " " << file.get_size() << "\n";
+            << file.get_owner_username() << " " << file.get_owner_groupname()
+            << " " << file.get_name() << " " << file.get_size() << "\n";
 }
 
 int main(int argc, char *argv[]) {

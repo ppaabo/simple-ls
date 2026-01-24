@@ -10,6 +10,8 @@ public:
   const std::string &get_name() const;
   off_t get_size() const;
   char get_type() const;
+  time_t get_last_mtime() const;
+  bool is_directory() const;
   std::string get_permissions() const;
   std::string get_owner_username() const;
   std::string get_owner_groupname() const;

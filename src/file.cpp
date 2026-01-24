@@ -16,10 +16,9 @@ File::File(const std::string &name, const std::string &dir)
 
 const std::string &File::get_name() const { return name_; }
 off_t File::get_size() const { return stat_.st_size; }
-std::string File::get_permissions() const {
-  return get_owner_permissions() + get_group_permissions() +
-         get_other_permissions();
-}
+time_t File::get_last_mtime() const { return stat_.st_mtime; }
+bool File::is_directory() const { return S_ISDIR(stat_.st_mode); }
+
 char File::get_type() const {
   if (S_ISREG(stat_.st_mode))
     return '-';
@@ -37,6 +36,11 @@ char File::get_type() const {
     return 's';
 
   return '?';
+}
+
+std::string File::get_permissions() const {
+  return get_owner_permissions() + get_group_permissions() +
+         get_other_permissions();
 }
 
 std::string File::get_owner_username() const {
