@@ -9,8 +9,10 @@ public:
   File(const std::string &name, const std::string &path);
   const std::string &get_name() const;
   off_t get_size() const;
-  std::string get_permissions() const;
   char get_type() const;
+  std::string get_permissions() const;
+  std::string get_owner_username() const;
+  std::string get_owner_groupname() const;
 
 private:
   std::string name_;

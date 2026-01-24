@@ -1,9 +1,13 @@
 #include "file.hpp"
 #include <cstring>
+#include <grp.h>
+#include <pwd.h>
 #include <stdexcept>
 #include <string>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
+#include <vector>
 
 File::File(const std::string &name, const std::string &dir)
     : name_(name), full_path_(dir + "/" + name), stat_{} {
@@ -33,6 +37,48 @@ char File::get_type() const {
     return 's';
 
   return '?';
+}
+
+std::string File::get_owner_username() const {
+  struct passwd result;
+  struct passwd *resultp = nullptr;
+  long bufsize = sysconf(_SC_GETPW_R_SIZE_MAX); // recommended buf size
+  if (bufsize == -1) {
+    bufsize = 16384;
+  }
+
+  std::vector<char> buf(static_cast<size_t>(bufsize));
+  int ret = getpwuid_r(stat_.st_uid, &result, buf.data(), buf.size(), &resultp);
+  if (ret != 0) {
+    throw std::runtime_error(std::string("getpwuid_r failed: ") +
+                             std::strerror(ret));
+  }
+  if (resultp == nullptr) {
+    return "-"; // placeholder if username not found
+  }
+
+  return std::string(result.pw_name);
+}
+
+std::string File::get_owner_groupname() const {
+  struct group result;
+  struct group *resultp = nullptr;
+  long bufsize = sysconf(_SC_GETGR_R_SIZE_MAX); // recommended buf size
+  if (bufsize == -1) {
+    bufsize = 16384;
+  }
+
+  std::vector<char> buf(static_cast<size_t>(bufsize));
+  int ret = getgrgid_r(stat_.st_gid, &result, buf.data(), buf.size(), &resultp);
+  if (ret != 0) {
+    throw std::runtime_error(std::string("getgrgid_r failed: ") +
+                             std::strerror(ret));
+  }
+  if (resultp == nullptr) {
+    return "-"; // placeholder if groupname not found
+  }
+
+  return std::string(result.gr_name);
 }
 
 void File::retrieve_attributes() {
