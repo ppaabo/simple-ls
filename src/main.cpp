@@ -1,20 +1,17 @@
 #include "argparse.hpp"
-#include "directory.hpp"
-#include "file.hpp"
+#include "file_utils.hpp"
 #include <exception>
 #include <filesystem>
 #include <iostream>
-namespace fs = std::filesystem;
 
-void print_file_info(const File &file) {
-  std::cout << file.get_type() << file.get_permissions() << " "
-            << file.get_owner_username() << " " << file.get_owner_groupname()
-            << " " << file.get_name() << " " << file.get_size() << "\n";
-}
+namespace fs = std::filesystem;
 
 int main(int argc, char *argv[]) {
   argparse::ArgumentParser program("simple-ls");
   program.add_argument("path").help("Directory path").default_value(".");
+  program.add_argument("-a", "--all")
+      .help("Show files starting with '.'")
+      .flag();
 
   try {
     program.parse_args(argc, argv);
@@ -25,14 +22,13 @@ int main(int argc, char *argv[]) {
   }
 
   try {
+    Settings settings{};
     std::string path = program.get<std::string>("path");
     if (!fs::exists(path) || !fs::is_directory(path)) {
       throw std::runtime_error("provided path is invalid: " + path);
     }
-    Directory dir(path);
-    for (const auto &file : dir.get_entries()) {
-      print_file_info(file);
-    }
+    settings.show_hidden = program.get<bool>("-a");
+    ls(path, settings);
   } catch (const std::exception &e) {
     std::cerr << "error occured: " << e.what() << "\n";
     return 1;
