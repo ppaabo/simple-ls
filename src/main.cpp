@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
       .help("Show files starting with '.'")
       .flag();
   program.add_argument("-l").help("Print entries using long format").flag();
+  program.add_argument("-p").help("Add '/' indicator to directories").flag();
 
   try {
     program.parse_args(argc, argv);
@@ -30,6 +31,7 @@ int main(int argc, char *argv[]) {
     }
     settings.show_hidden = program.get<bool>("-a");
     settings.print_long_format = program.get<bool>("-l");
+    settings.print_dir_indicator = program.get<bool>("-p");
     ls(path, settings);
   } catch (const std::exception &e) {
     std::cerr << "error occured: " << e.what() << "\n";
