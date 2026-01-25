@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
   program.add_argument("-a", "--all")
       .help("Show files starting with '.'")
       .flag();
+  program.add_argument("-l").help("Print entries using long format").flag();
 
   try {
     program.parse_args(argc, argv);
@@ -28,6 +29,7 @@ int main(int argc, char *argv[]) {
       throw std::runtime_error("provided path is invalid: " + path);
     }
     settings.show_hidden = program.get<bool>("-a");
+    settings.print_long_format = program.get<bool>("-l");
     ls(path, settings);
   } catch (const std::exception &e) {
     std::cerr << "error occured: " << e.what() << "\n";

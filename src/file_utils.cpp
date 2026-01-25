@@ -7,7 +7,11 @@
 #include <vector>
 
 namespace {
-void print_file_info(const File &file) {
+void print_file_info(const File &file, const Settings &settings) {
+  if (!settings.print_long_format) {
+    std::cout << file.get_name() << "\n";
+    return;
+  }
   std::cout << file.get_type() << file.get_permissions() << " "
             << file.get_owner_username() << " " << file.get_owner_groupname()
             << " " << file.get_name() << " " << file.get_size() << "\n";
@@ -31,7 +35,7 @@ void ls(const std::string &path, const Settings &settings) {
       filter_hidden(entries);
     }
     for (const auto &file : entries) {
-      print_file_info(file);
+      print_file_info(file, settings);
     }
   } catch (const std::exception &e) {
     throw;
