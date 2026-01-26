@@ -30,23 +30,26 @@ void sort_entries(std::vector<File> &entries, const Settings &settings) {
   }
 }
 
-void print_file_info(const File &file, const Settings &settings,
-                     std::ostream &os, ColWidths widths) {
-  std::string display_name = file.get_name();
-  if (settings.print_dir_indicator && file.is_directory()) {
-    display_name += "/";
-  }
+void print_file_info(const std::vector<File> &entries, const Settings &settings,
+                     std::ostream &os) {
+  for (const File &file : entries) {
+    std::string display_name = file.get_name();
+    if (settings.print_dir_indicator && file.is_directory()) {
+      display_name += "/";
+    }
 
-  if (!settings.print_long_format) {
-    os << display_name << "\n";
-    return;
-  }
+    if (!settings.print_long_format) {
+      os << display_name << "\n";
+      continue;
+    }
 
-  os << file.get_type() << file.get_permissions() << " "
-     << std::setw(widths.owner) << file.get_owner_username() << " "
-     << std::setw(widths.group) << file.get_owner_groupname() << " "
-     << std::setw(widths.file_size) << file.get_size() << " "
-     << format_time(file.get_last_mtime()) << " " << display_name << "\n";
+    ColWidths widths = calc_col_widths(entries);
+    os << file.get_type() << file.get_permissions() << " "
+       << std::setw(widths.owner) << file.get_owner_username() << " "
+       << std::setw(widths.group) << file.get_owner_groupname() << " "
+       << std::setw(widths.file_size) << file.get_size() << " "
+       << format_time(file.get_last_mtime()) << " " << display_name << "\n";
+  }
 }
 } // namespace
 
@@ -58,10 +61,7 @@ void ls(const std::string &path, const Settings &settings) {
       filter_hidden(entries);
     }
     sort_entries(entries, settings);
-    ColWidths widths = calc_col_widths(entries);
-    for (const auto &file : entries) {
-      print_file_info(file, settings, std::cout, widths);
-    }
+    print_file_info(entries, settings, std::cout);
   } catch (const std::exception &e) {
     throw;
   }
