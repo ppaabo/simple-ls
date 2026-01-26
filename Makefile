@@ -7,7 +7,7 @@ LIB_DIR = libs
 
 SRCS := $(wildcard $(SRC_DIR)/*.cpp)
 OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRCS))
-TARGET := $(BUILD_DIR)/app
+TARGET := $(BUILD_DIR)/simple-ls
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC_DIR)/*.hpp $(LIB_DIR)/*.hpp
 	@mkdir -p $(BUILD_DIR)
