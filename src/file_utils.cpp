@@ -20,6 +20,17 @@ void filter_hidden(std::vector<File> &entries) {
   entries.erase(new_end, entries.end());
 }
 
+void sort_entries(std::vector<File> &entries, const Settings &settings) {
+  std::sort(entries.begin(), entries.end(), [](const File &a, const File &b) {
+    return a.get_name() < b.get_name();
+  });
+  // keep alphabetical sorting and group directories before files
+  if (settings.group_directories_first) {
+    std::stable_partition(entries.begin(), entries.end(),
+                          [](const File &f) { return f.is_directory(); });
+  }
+}
+
 std::string format_time(time_t mtime) {
   std::tm *local_tm = localtime(&mtime);
   std::ostringstream oss;
@@ -53,6 +64,7 @@ void ls(const std::string &path, const Settings &settings) {
     if (!settings.show_hidden) {
       filter_hidden(entries);
     }
+    sort_entries(entries, settings);
     for (const auto &file : entries) {
       print_file_info(file, settings, std::cout);
     }

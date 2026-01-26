@@ -4,9 +4,10 @@
 
 // settings based on flags
 struct Settings {
-  bool show_hidden = false;         // -a, --all
-  bool print_long_format = false;   // -l
-  bool print_dir_indicator = false; // -p
+  bool show_hidden = false;             // -a, --all
+  bool print_long_format = false;       // -l
+  bool print_dir_indicator = false;     // -p
+  bool group_directories_first = false; // -g, --group_directories_first
 };
 
 void ls(const std::string &path, const Settings &settings);
