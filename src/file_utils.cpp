@@ -1,13 +1,11 @@
 #include "file_utils.hpp"
 #include "directory.hpp"
 #include "file.hpp"
+#include "format_utils.hpp"
 #include <algorithm>
-#include <iomanip>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <sys/types.h>
-#include <time.h>
 #include <vector>
 
 namespace {
@@ -29,13 +27,6 @@ void sort_entries(std::vector<File> &entries, const Settings &settings) {
     std::stable_partition(entries.begin(), entries.end(),
                           [](const File &f) { return f.is_directory(); });
   }
-}
-
-std::string format_time(time_t mtime) {
-  std::tm *local_tm = localtime(&mtime);
-  std::ostringstream oss;
-  oss << std::put_time(local_tm, "%b %d %H:%M");
-  return oss.str();
 }
 
 void print_file_info(const File &file, const Settings &settings,
