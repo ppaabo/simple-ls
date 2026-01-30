@@ -48,22 +48,24 @@ void sort_entries(std::vector<File> &entries, const Settings &settings) {
 void print_file_info(const std::vector<File> &entries, const Settings &settings,
                      std::ostream &os) {
   for (const File &file : entries) {
-    std::string display_name = file.get_name();
+    std::string file_name = file.get_name();
+    const char file_type = file.get_type();
+
     if (settings.print_dir_indicator && file.is_directory()) {
-      display_name += "/";
+      file_name += "/";
     }
 
     if (!settings.print_long_format) {
-      os << display_name << "\n";
+      os << get_color_code(file_type) << file_name << COLOR_RESET_CODE << "\n";
       continue;
     }
 
     ColWidths widths = calc_col_widths(entries);
-    os << file.get_type() << file.get_permissions() << " "
-       << std::setw(widths.owner) << file.get_owner_username() << " "
-       << std::setw(widths.group) << file.get_owner_groupname() << " "
-       << std::setw(widths.file_size) << file.get_size() << " "
-       << format_time(file.get_last_mtime()) << " " << display_name << "\n";
+    os << file_type << file.get_permissions() << " " << std::setw(widths.owner)
+       << file.get_owner_username() << " " << std::setw(widths.group)
+       << file.get_owner_groupname() << " " << std::setw(widths.file_size)
+       << file.get_size() << " " << format_time(file.get_last_mtime()) << " "
+       << get_color_code(file_type) << file_name << COLOR_RESET_CODE << "\n";
   }
 }
 } // namespace
