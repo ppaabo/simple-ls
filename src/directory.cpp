@@ -20,10 +20,7 @@ void Directory::read_entries() {
   struct dirent *entry;
   errno = 0;
   while ((entry = readdir(dir)) != nullptr) {
-    // skip . and ..
-    if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
-      entries_.emplace_back(entry->d_name, path_);
-    }
+    entries_.emplace_back(entry->d_name, path_);
   }
   if (errno != 0) {
     closedir(dir);

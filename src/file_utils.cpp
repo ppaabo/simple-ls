@@ -10,7 +10,22 @@
 #include <vector>
 
 namespace {
-void filter_hidden(std::vector<File> &entries) {
+void filter_hidden(std::vector<File> &entries, const Settings &settings) {
+  if (settings.show_hidden)
+    return;
+
+  // -A, remove '.' and '..'
+  if (settings.show_almost_all) {
+    auto new_end =
+        std::remove_if(entries.begin(), entries.end(), [](const File &f) {
+          const std::string &name = f.get_name();
+          return name == "." || name == "..";
+        });
+    entries.erase(new_end, entries.end());
+    return;
+  }
+
+  // remove entries starting with '.'
   auto new_end =
       std::remove_if(entries.begin(), entries.end(), [](const File &f) {
         const std::string &name = f.get_name();
@@ -57,9 +72,7 @@ void ls(const std::string &path, const Settings &settings) {
   try {
     Directory dir(path);
     std::vector<File> entries = dir.get_entries();
-    if (!settings.show_hidden) {
-      filter_hidden(entries);
-    }
+    filter_hidden(entries, settings);
     sort_entries(entries, settings);
     print_file_info(entries, settings, std::cout);
   } catch (const std::exception &e) {

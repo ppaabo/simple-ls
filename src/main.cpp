@@ -12,6 +12,9 @@ int main(int argc, char *argv[]) {
   program.add_argument("-a", "--all")
       .help("Show files starting with '.'")
       .flag();
+  program.add_argument("-A", "--almost-all")
+      .help("Do not show implied '.' and '..'")
+      .flag();
   program.add_argument("-l").help("Print entries using long format").flag();
   program.add_argument("-p").help("Add '/' indicator to directories").flag();
   program.add_argument("-g", "--group-directories-first")
@@ -33,6 +36,7 @@ int main(int argc, char *argv[]) {
       throw std::runtime_error("provided path is invalid: " + path);
     }
     settings.show_hidden = program.get<bool>("-a");
+    settings.show_almost_all = program.get<bool>("-A");
     settings.print_long_format = program.get<bool>("-l");
     settings.print_dir_indicator = program.get<bool>("-p");
     settings.group_directories_first = program.get<bool>("-g");
