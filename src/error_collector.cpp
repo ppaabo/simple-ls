@@ -14,7 +14,10 @@ const std::vector<std::string> &ErrorCollector::get_errors() const {
 }
 
 void ErrorCollector::print_errors(std::ostream &os) const {
-  for (const auto &error : errors_) {
-    os << error << "\n";
+  if (has_errors()) {
+    os << "\nNon-fatal errors encountered:\n";
+    for (const auto &error : errors_) {
+      os << error << "\n";
+    }
   }
 }

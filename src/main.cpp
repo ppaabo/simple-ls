@@ -1,4 +1,5 @@
 #include "argparse.hpp"
+#include "error_collector.hpp"
 #include "file_utils.hpp"
 #include <exception>
 #include <filesystem>
@@ -20,6 +21,7 @@ int main(int argc, char *argv[]) {
   program.add_argument("-g", "--group-directories-first")
       .help("Group directories before files")
       .flag();
+  program.add_argument("--verbose").help("Enable verbose mode").flag();
 
   try {
     program.parse_args(argc, argv);
@@ -40,7 +42,13 @@ int main(int argc, char *argv[]) {
     settings.print_long_format = program.get<bool>("-l");
     settings.print_dir_indicator = program.get<bool>("-p");
     settings.group_directories_first = program.get<bool>("-g");
-    ls(path, settings);
+    settings.verbose = program.get<bool>("--verbose");
+
+    ErrorCollector errors;
+    ls(path, settings, errors);
+    if (settings.verbose) {
+      errors.print_errors(std::cerr);
+    }
   } catch (const std::exception &e) {
     std::cerr << "error occured: " << e.what() << "\n";
     return 1;

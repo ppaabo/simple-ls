@@ -1,17 +1,20 @@
 #include "directory.hpp"
+#include "error_collector.hpp"
 #include <cstring>
 #include <dirent.h>
-#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <sys/types.h>
 #include <vector>
 
-Directory::Directory(const std::string &path) : path_(path) { read_entries(); }
+Directory::Directory(const std::string &path, ErrorCollector &errors)
+    : path_(path) {
+  read_entries(errors);
+}
 
 const std::vector<File> &Directory::get_entries() const { return entries_; }
 
-void Directory::read_entries() {
+void Directory::read_entries(ErrorCollector &errors) {
   DIR *dir = opendir(path_.c_str());
   if (!dir) {
     throw std::runtime_error(std::string("Error opening directory: ") +
@@ -33,7 +36,9 @@ void Directory::read_entries() {
     try {
       entries_.emplace_back(entry->d_name, path_);
     } catch (const std::exception &e) {
-      std::cerr << "error occured: " << e.what() << "\n";
+      // store message if constructing a file instance fails
+      errors.add_error(std::string("failed to read ") + entry->d_name + ": " +
+                       e.what());
     }
   }
   closedir(dir);
