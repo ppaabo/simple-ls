@@ -1,6 +1,7 @@
 #include "directory.hpp"
 #include <cstring>
 #include <dirent.h>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <sys/types.h>
@@ -18,14 +19,22 @@ void Directory::read_entries() {
   }
 
   struct dirent *entry;
-  errno = 0;
-  while ((entry = readdir(dir)) != nullptr) {
-    entries_.emplace_back(entry->d_name, path_);
-  }
-  if (errno != 0) {
-    closedir(dir);
-    throw std::runtime_error(std::string("Errro reading directory: ") +
-                             strerror(errno));
+  while (true) {
+    errno = 0; // reset errno before each readdir
+    entry = readdir(dir);
+    if (!entry) {
+      if (errno != 0) {
+        throw std::runtime_error(
+            std::string("Error reading directory entry: ") + strerror(errno));
+      }
+      break; // end of dir or error
+    }
+
+    try {
+      entries_.emplace_back(entry->d_name, path_);
+    } catch (const std::exception &e) {
+      std::cerr << "error occured: " << e.what() << "\n";
+    }
   }
   closedir(dir);
 }
