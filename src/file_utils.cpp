@@ -1,5 +1,6 @@
 #include "file_utils.hpp"
 #include "directory.hpp"
+#include "error_collector.hpp"
 #include "file.hpp"
 #include "format_utils.hpp"
 #include <algorithm>
@@ -70,9 +71,10 @@ void print_file_info(const std::vector<File> &entries, const Settings &settings,
 }
 } // namespace
 
-void ls(const std::string &path, const Settings &settings) {
+void ls(const std::string &path, const Settings &settings,
+        ErrorCollector &errors) {
   try {
-    Directory dir(path);
+    Directory dir(path, errors);
     std::vector<File> entries = dir.get_entries();
     filter_hidden(entries, settings);
     sort_entries(entries, settings);

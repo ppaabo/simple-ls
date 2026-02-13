@@ -1,5 +1,6 @@
 #pragma once
 
+#include "error_collector.hpp"
 #include <string>
 
 // settings based on flags
@@ -9,6 +10,8 @@ struct Settings {
   bool print_long_format = false;       // -l
   bool print_dir_indicator = false;     // -p
   bool group_directories_first = false; // -g, --group_directories_first
+  bool verbose = false;
 };
 
-void ls(const std::string &path, const Settings &settings);
+void ls(const std::string &path, const Settings &settings,
+        ErrorCollector &errors);
