@@ -35,7 +35,7 @@ make
 
 # -h or --help to view instructions and available options:
 ./build/simple-ls --help
-Usage: simple-ls [--help] [--version] [--all] [-l] [-p] [--group-directories-first] path
+Usage: simple-ls [--help] [--version] [--all] [--almost-all] [-l] [-p] [--group-directories-first] [--verbose] path
 
 Positional arguments:
   path                           Directory path [nargs=0..1] [default: "."]
@@ -44,8 +44,10 @@ Optional arguments:
   -h, --help                     shows help message and exits
   -v, --version                  prints version information and exits
   -a, --all                      Show files starting with '.'
+  -A, --almost-all               Do not show implied '.' and '..'
   -l                             Print entries using long format
   -p                             Add '/' indicator to directories
   -g, --group-directories-first  Group directories before files
+  --verbose                      Enable verbose mode
 
 ```
