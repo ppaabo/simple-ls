@@ -20,6 +20,8 @@ private:
   std::string name_;
   std::string full_path_;
   struct stat stat_;
+  std::string owner_username_;
+  std::string owner_groupname_;
 
   void retrieve_attributes();
 

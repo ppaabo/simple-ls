@@ -43,57 +43,49 @@ std::string File::get_permissions() const {
          get_other_permissions();
 }
 
-std::string File::get_owner_username() const {
-  struct passwd result;
-  struct passwd *resultp = nullptr;
-  long bufsize = sysconf(_SC_GETPW_R_SIZE_MAX); // recommended buf size
-  if (bufsize == -1) {
-    bufsize = 16384;
-  }
+std::string File::get_owner_username() const { return owner_username_; }
 
-  std::vector<char> buf(static_cast<size_t>(bufsize));
-  int ret = getpwuid_r(stat_.st_uid, &result, buf.data(), buf.size(), &resultp);
-  if (ret != 0) {
-    throw std::runtime_error(std::string("getpwuid_r failed: ") +
-                             std::strerror(ret));
-  }
-  if (resultp == nullptr) {
-    return "-"; // placeholder if username not found
-  }
-
-  return std::string(result.pw_name);
-}
-
-std::string File::get_owner_groupname() const {
-  struct group result;
-  struct group *resultp = nullptr;
-  long bufsize = sysconf(_SC_GETGR_R_SIZE_MAX); // recommended buf size
-  if (bufsize == -1) {
-    bufsize = 16384;
-  }
-
-  std::vector<char> buf(static_cast<size_t>(bufsize));
-  int ret = getgrgid_r(stat_.st_gid, &result, buf.data(), buf.size(), &resultp);
-  if (ret != 0) {
-    throw std::runtime_error(std::string("getgrgid_r failed: ") +
-                             std::strerror(ret));
-  }
-  if (resultp == nullptr) {
-    return "-"; // placeholder if groupname not found
-  }
-
-  return std::string(result.gr_name);
-}
+std::string File::get_owner_groupname() const { return owner_groupname_; }
 
 void File::retrieve_attributes() {
-  struct stat buf;
-  int result = stat(full_path_.c_str(), &buf);
+  struct stat stat_buf;
+  int stat_result = stat(full_path_.c_str(), &stat_buf);
 
-  if (result == -1) {
+  if (stat_result == -1) {
     throw std::runtime_error(std::string("stat failed for ") + full_path_ +
                              ": " + strerror(errno));
   }
-  stat_ = buf;
+  stat_ = stat_buf;
+
+  // get owner usename
+  struct passwd pw_result;
+  struct passwd *pw_resultp = nullptr;
+  long pw_bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
+  if (pw_bufsize == -1)
+    pw_bufsize = 16384;
+  std::vector<char> pw_buf(static_cast<size_t>(pw_bufsize));
+  int pw_ret = getpwuid_r(stat_.st_uid, &pw_result, pw_buf.data(),
+                          pw_buf.size(), &pw_resultp);
+  if (pw_ret != 0 || pw_resultp == nullptr) {
+    owner_username_ = "-";
+  } else {
+    owner_username_ = pw_result.pw_name;
+  }
+
+  // get groupname
+  struct group gr_result;
+  struct group *gr_resultp = nullptr;
+  long gr_bufsize = sysconf(_SC_GETGR_R_SIZE_MAX);
+  if (gr_bufsize == -1)
+    gr_bufsize = 16384;
+  std::vector<char> gr_buf(static_cast<size_t>(gr_bufsize));
+  int ret = getgrgid_r(stat_.st_gid, &gr_result, gr_buf.data(), gr_buf.size(),
+                       &gr_resultp);
+  if (ret != 0 || gr_resultp == nullptr) {
+    owner_groupname_ = "-";
+  } else {
+    owner_groupname_ = gr_result.gr_name;
+  }
 }
 
 std::string File::get_owner_permissions() const {
