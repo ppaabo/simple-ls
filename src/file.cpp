@@ -11,7 +11,9 @@
 
 File::File(const std::string &name, const std::string &dir)
     : name_(name), full_path_(dir + "/" + name), stat_{} {
-  retrieve_attributes();
+  init_stat();
+  init_owner_username();
+  init_owner_groupname();
 }
 
 const std::string &File::get_name() const { return name_; }
@@ -47,17 +49,18 @@ std::string File::get_owner_username() const { return owner_username_; }
 
 std::string File::get_owner_groupname() const { return owner_groupname_; }
 
-void File::retrieve_attributes() {
-  struct stat stat_buf;
-  int stat_result = stat(full_path_.c_str(), &stat_buf);
+void File::init_stat() {
+  struct stat buf;
+  int result = stat(full_path_.c_str(), &buf);
 
-  if (stat_result == -1) {
+  if (result == -1) {
     throw std::runtime_error(std::string("stat failed for ") + full_path_ +
                              ": " + strerror(errno));
   }
-  stat_ = stat_buf;
+  stat_ = buf;
+}
 
-  // get owner usename
+void File::init_owner_username() {
   struct passwd pw_result;
   struct passwd *pw_resultp = nullptr;
   long pw_bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
@@ -71,8 +74,9 @@ void File::retrieve_attributes() {
   } else {
     owner_username_ = pw_result.pw_name;
   }
+}
 
-  // get groupname
+void File::init_owner_groupname() {
   struct group gr_result;
   struct group *gr_resultp = nullptr;
   long gr_bufsize = sysconf(_SC_GETGR_R_SIZE_MAX);

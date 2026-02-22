@@ -23,7 +23,9 @@ private:
   std::string owner_username_;
   std::string owner_groupname_;
 
-  void retrieve_attributes();
+  void init_stat();
+  void init_owner_username();
+  void init_owner_groupname();
 
   std::string get_owner_permissions() const;
   std::string get_group_permissions() const;
