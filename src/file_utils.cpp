@@ -51,13 +51,15 @@ void print_file_info(const std::vector<File> &entries, const Settings &settings,
   for (const File &file : entries) {
     std::string file_name = file.get_name();
     const char file_type = file.get_type();
+    bool is_exec = file.is_executable();
 
     if (settings.print_dir_indicator && file.is_directory()) {
       file_name += "/";
     }
 
     if (!settings.print_long_format) {
-      os << get_color_code(file_type) << file_name << COLOR_RESET_CODE << "\n";
+      os << get_color_code(file_type, is_exec) << file_name << COLOR_RESET_CODE
+         << "\n";
       continue;
     }
 
@@ -66,7 +68,8 @@ void print_file_info(const std::vector<File> &entries, const Settings &settings,
        << file.get_owner_username() << " " << std::setw(widths.group)
        << file.get_owner_groupname() << " " << std::setw(widths.file_size)
        << file.get_size() << " " << format_time(file.get_last_mtime()) << " "
-       << get_color_code(file_type) << file_name << COLOR_RESET_CODE << "\n";
+       << get_color_code(file_type, is_exec) << file_name << COLOR_RESET_CODE
+       << "\n";
   }
 }
 } // namespace

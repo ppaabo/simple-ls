@@ -19,4 +19,4 @@ std::string format_time(time_t mtime);
 // calculate column widths for formatting
 ColWidths calc_col_widths(const std::vector<File> &entries);
 
-std::string get_color_code(char file_type);
+std::string get_color_code(char file_type, bool is_executable = false);

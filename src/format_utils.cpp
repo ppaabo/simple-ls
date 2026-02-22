@@ -20,6 +20,7 @@ const std::unordered_map<std::string, std::string> default_color_map = {
     {"cd", "\033[40;33;01m"}, // char device
     {"pi", "\033[40;33m"},    // FIFO
     {"so", "\033[01;35m"},    // socket
+    {"ex", "\033[01;32m"},    // executable
 };
 
 std::unordered_map<std::string, std::string>
@@ -83,8 +84,11 @@ ColWidths calc_col_widths(const std::vector<File> &entries) {
   return widths;
 }
 
-std::string get_color_code(char file_type) {
+std::string get_color_code(char file_type, bool is_executable) {
   const auto &colors = get_color_map();
+  if (is_executable)
+    return colors.at("ex");
+
   switch (file_type) {
   case '-':
     return colors.at("fi");
