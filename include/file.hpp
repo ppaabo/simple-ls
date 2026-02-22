@@ -12,6 +12,7 @@ public:
   char get_type() const;
   time_t get_last_mtime() const;
   bool is_directory() const;
+  bool is_executable() const;
   std::string get_permissions() const;
   std::string get_owner_username() const;
   std::string get_owner_groupname() const;

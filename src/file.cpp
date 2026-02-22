@@ -20,6 +20,13 @@ const std::string &File::get_name() const { return name_; }
 off_t File::get_size() const { return stat_.st_size; }
 time_t File::get_last_mtime() const { return stat_.st_mtime; }
 bool File::is_directory() const { return S_ISDIR(stat_.st_mode); }
+bool File::is_executable() const {
+  if (S_ISREG(stat_.st_mode)) {
+    return (stat_.st_mode & S_IXUSR) != 0 || (stat_.st_mode & S_IXGRP) != 0 ||
+           (stat_.st_mode & S_IXOTH) != 0;
+  }
+  return false;
+}
 
 char File::get_type() const {
   if (S_ISREG(stat_.st_mode))
